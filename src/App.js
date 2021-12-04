@@ -1,6 +1,5 @@
 import './App.css';
 import React, { Component } from 'react';
-import ReactDOM from 'react-dom'
 
 class App extends Component {
 
@@ -17,8 +16,7 @@ class App extends Component {
       ]
     };
     this.addTodo = this.addTodo.bind(this);
-
-    
+    this.addTodoInputRef = React.createRef();
   }
 
   // 画面Update
@@ -38,11 +36,11 @@ class App extends Component {
     console.log("add todo");
 
     // 何も入力されていなかったらリターン
-    if (!this.refs.newText.value) return;
+    if (!this.addTodoInputRef.current.value) return;
 
     // 追加
     this.state.todo.push({
-      title: this.refs.newText.value,
+      title: this.addTodoInputRef.current.value,
       status: this.statusList[0],
       inputRef: React.createRef()
     });
@@ -51,7 +49,7 @@ class App extends Component {
       todo : this.state.todo
     });
     
-    this.refs.newText.value='';
+    this.addTodoInputRef.current.value='';
   }
  
   // 削除機能
@@ -122,7 +120,7 @@ class App extends Component {
   }
 
   handleOnChange(e) {
-    this.refs.newText.value = e.target.value;
+    this.addTodoInputRef.current.value = e.target.value;
   }
 
   handleOnChangeEdit(i, e) {
@@ -145,7 +143,7 @@ class App extends Component {
             e.preventDefault();
             this.addTodo();
           }}>
-          <input type="text" ref="newText" onChange={(e) => this.handleOnChange(e)} />
+          <input type="text" ref={this.addTodoInputRef} onChange={(e) => this.handleOnChange(e)} />
           <input type="submit" value="追加" onSubmit={this.addTodo} />
         </form>
 
