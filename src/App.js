@@ -21,6 +21,7 @@ class App extends Component {
     
   }
 
+  // 画面Update
   componentDidUpdate() {
     this.state.todo.map( (todo, i) => {
       if (todo.isEdit) {
@@ -34,6 +35,7 @@ class App extends Component {
 
   // 新規追加
   addTodo() {
+    console.log("add todo");
 
     // 何も入力されていなかったらリターン
     if (!this.refs.newText.value) return;
@@ -44,29 +46,29 @@ class App extends Component {
       status: this.statusList[0],
       inputRef: React.createRef()
     });
-    // 保存
+
     this.setState({
       todo : this.state.todo
     });
-    // 初期化
+    
     this.refs.newText.value='';
   }
  
   // 削除機能
   deleteTodo(i) {
-    // 削除
+    console.log("delete todo");
+    
     this.state.todo.splice(i, 1);
-    // 保存
+
     this.setState({
       todo : this.state.todo
     });
   }
 
+  // 編集
   changeTodoTitle(i) {
-    console.log("edit");
-
-    if (this.state.todo[i].isEdit) this.state.todo[i].isEdit = false;
-    else this.state.todo[i].isEdit = true;
+    console.log("edit start");
+    this.state.todo[i].isEdit = true;
 
     this.state.todo[i].inputRef.current.value = this.state.todo[i].title;
     this.state.todo[i].inputRef.current.focus();
@@ -75,14 +77,28 @@ class App extends Component {
     });
   }
 
+  // フォーカスが外れたため編集終了
   onBlurTitleEdit(i) {
-    console.log("edit end");
-    if (this.state.todo[i].isEdit) this.state.todo[i].isEdit = false;
-    else this.state.todo[i].isEdit = true;
+    console.log("edit end by blur");
+    this.state.todo[i].isEdit = false;
 
     this.setState({
       todo : this.state.todo
     });
+  }
+
+  // Enterキーが押されたため編集終了
+  onKeyPressTitleEdit(i, e) {
+    console.log("edit end by enter");
+    if (e.key == 'Enter') {
+      e.preventDefault();
+      
+      this.state.todo[i].isEdit = false;
+
+      this.setState({
+        todo : this.state.todo
+      });
+    }
   }
 
   changeTodoStatus(i) {
@@ -138,13 +154,11 @@ class App extends Component {
             return <li key={i} >
             <input type="button" value={todo.status} onClick={() => this.changeTodoStatus(i)}/>
             <span onClick={() => this.changeTodoTitle(i)} hidden={todo.isEdit}>{todo.title}</span>
-            <input type="text" ref={todo.inputRef} onChange={(e) => this.handleOnChangeEdit(i, e)} value={todo.title} hidden={!todo.isEdit} onBlur={() => this.onBlurTitleEdit(i)} autoFocus={todo.isEdit}/>
+            <input type="text" ref={todo.inputRef} onChange={(e) => this.handleOnChangeEdit(i, e)} value={todo.title} hidden={!todo.isEdit} onBlur={() => this.onBlurTitleEdit(i)} onKeyPress={(e) => this.onKeyPressTitleEdit(i, e)}/>
             <input type="button" value="☓" onClick={() => this.deleteTodo(i)}/> 
             </li>
           })}
         </ul>
-
-
 
         </header>
 
