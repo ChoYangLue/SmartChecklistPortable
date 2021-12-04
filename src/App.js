@@ -1,71 +1,84 @@
 import logo from './logo.svg';
 import './App.css';
-import { useState } from 'react';
+import React, { Component } from 'react';
 
-function App() {
+class App extends Component {
 
-  const [text, setText] = useState('');
-
-  //const [todos, setTodos] = useState<Todo>([]);
-
-  const todos = ["リンゴ", "パイナップル", "ペン"];
-
-  // todos ステートを更新する関数
-  const handleOnSubmit = () => {
-    // 何も入力されていなかったらリターン
-    if (!text) return;
-
-    // 新しい Todo を作成
-    const newTodo = {
-      value: text,
+  constructor(props){
+    super(props);
+    this.state = {
+      todo: [
+       { title: 'JavaScript覚える' } ,
+       { title: 'jQuery覚える' } ,
+       { title: 'ES2015覚える' } ,
+       { title: 'React覚える' }
+      ]
     };
+    this.addTodo = this.addTodo.bind(this);
+  }
+  
+  // 新規追加
+  addTodo() {
 
-    //setTodos([newTodo, ...todos]);
-    todos.push(text);
-    // フォームへの入力をクリアする
-    setText('');
+    // 何も入力されていなかったらリターン
+    if (!this.refs.newText.value) return;
 
-    console.log(todos);
-  };
+    // 追加
+    this.state.todo.push({
+      title: this.refs.newText.value
+    });
+    // 保存
+    this.setState({
+      todo : this.state.todo
+    });
+    // 初期化
+    this.refs.newText.value='';
+  }
+ 
+  // 削除機能
+  deleteTodo(i) {
+    // 削除
+    this.state.todo.splice(i, 1);
+    // 保存
+    this.setState({
+      todo : this.state.todo
+    });
+  }
 
-  const handleOnChange = (e) => {
-    setText(e.target.value);
-  };
+  handleOnChange(e) {
+    //setText(e.target.value);
+    this.refs.newText.value = e.target.value;
+  }
+ 
+  render() {
+    return (
+      <div lassName="App">
+        <header className="App-header">
 
-  return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
+        <h1>TODOアプリ</h1>
+        <ul>
+          {this.state.todo.map( (todo, i) => {
+            return <li key={i}> <input type="button" value="☓"
+                       onClick={() => this.deleteTodo(i)}/> {todo.title}</li>
+          })}
+        </ul>
+
 
         <form
           onSubmit={(e) => {
             e.preventDefault();
-            handleOnSubmit();
+            this.addTodo();
           }}>
-          <input type="text" value={text} onChange={(e) => handleOnChange(e)} />
-          <input type="submit" value="追加" onSubmit={handleOnSubmit} />
-      </form>
+          <input type="text" ref="newText" onChange={(e) => this.handleOnChange(e)} />
+          <input type="submit" value="追加" onSubmit={this.addTodo} />
+        </form>
 
-      <ul>
-        {todos.map((todo, i) => <li key={i}>{todo}</li>)}
-      </ul>
-
-      </header>
+        </header>
 
 
-    </div>
-  );
+      </div>
+    );
+  }
 }
 
 export default App;
