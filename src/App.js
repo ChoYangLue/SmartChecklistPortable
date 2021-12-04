@@ -1,4 +1,3 @@
-import logo from './logo.svg';
 import './App.css';
 import React, { Component } from 'react';
 
@@ -6,17 +5,20 @@ class App extends Component {
 
   constructor(props){
     super(props);
+    this.statusList = ["TODO", "PROG", "DONE", "SKIP"];
+
     this.state = {
       todo: [
-       { title: 'JavaScript覚える' } ,
-       { title: 'jQuery覚える' } ,
-       { title: 'ES2015覚える' } ,
-       { title: 'React覚える' }
+       { title: 'JavaScript覚える', status: "TODO" } ,
+       { title: 'jQuery覚える', status: "TODO" } ,
+       { title: 'ES2015覚える', status: "TODO" } ,
+       { title: 'React覚える', status: "TODO" }
       ]
     };
     this.addTodo = this.addTodo.bind(this);
+
   }
-  
+
   // 新規追加
   addTodo() {
 
@@ -25,7 +27,8 @@ class App extends Component {
 
     // 追加
     this.state.todo.push({
-      title: this.refs.newText.value
+      title: this.refs.newText.value,
+      status: this.statusList[0]
     });
     // 保存
     this.setState({
@@ -45,8 +48,27 @@ class App extends Component {
     });
   }
 
+  changeTodoStatus(i) {
+    this.state.todo[i].status = this.getNextStatus(this.state.todo[i].status);
+    
+    console.log("change status:"+this.state.todo[i].status);
+
+    this.setState({
+      todo : this.state.todo
+    });
+  }
+
+  getNextStatus(preStatus) {
+    var preIndex = this.statusList.indexOf(preStatus);
+
+    if (preIndex + 1 >= this.statusList.length) {
+      return this.statusList[0];
+    }
+
+    return this.statusList[preIndex + 1];
+  }
+
   handleOnChange(e) {
-    //setText(e.target.value);
     this.refs.newText.value = e.target.value;
   }
  
@@ -55,14 +77,7 @@ class App extends Component {
       <div lassName="App">
         <header className="App-header">
 
-        <h1>TODOアプリ</h1>
-        <ul>
-          {this.state.todo.map( (todo, i) => {
-            return <li key={i}> <input type="button" value="☓"
-                       onClick={() => this.deleteTodo(i)}/> {todo.title}</li>
-          })}
-        </ul>
-
+        <h1>SmartChecklistPortable</h1>
 
         <form
           onSubmit={(e) => {
@@ -73,8 +88,17 @@ class App extends Component {
           <input type="submit" value="追加" onSubmit={this.addTodo} />
         </form>
 
-        </header>
+        <ul>
+          {this.state.todo.map( (todo, i) => {
+            return <li key={i}>
+            <input type="button" value={todo.status} onClick={() => this.changeTodoStatus(i)}/>
+            {todo.title}
+            <input type="button" value="☓" onClick={() => this.deleteTodo(i)}/> 
+            </li>
+          })}
+        </ul>
 
+        </header>
 
       </div>
     );
