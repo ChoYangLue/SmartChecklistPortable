@@ -8,13 +8,12 @@ class App extends Component {
     this.statusList = ["TODO", "PROG", "DONE", "SKIP"];
 
     this.state = {
-      todo: [
-       { title: 'JavaScript覚える', status: "TODO", isEdit: false, inputRef: React.createRef() } ,
-       { title: 'jQuery覚える', status: "TODO", isEdit: false, inputRef: React.createRef() } ,
-       { title: 'ES2015覚える', status: "TODO", isEdit: false, inputRef: React.createRef() } ,
-       { title: 'React覚える', status: "TODO", isEdit: false, inputRef: React.createRef() }
-      ]
+      // todo: [{ title: 'JavaScript覚える', status: "TODO", isEdit: false, inputRef: React.createRef() }]
+      todo: JSON.parse(localStorage.getItem("todoList")) || [],
     };
+    this.state.todo.map( (todo, i) => {
+      todo.inputRef = React.createRef();
+    });
     this.addTodo = this.addTodo.bind(this);
     this.addTodoInputRef = React.createRef();
   }
@@ -28,8 +27,26 @@ class App extends Component {
         return;
       }
     });
-
   }
+
+  saveTodoForLocalStorage() {
+    console.log("save");
+    console.log(JSON.stringify(this.state.todo, this.getCircularReplacer()));
+    localStorage.setItem("todoList", JSON.stringify(this.state.todo, this.getCircularReplacer()));
+  }
+
+ getCircularReplacer() {
+    const seen = new WeakSet();
+    return (key, value) => {
+      if (typeof value === "object" && value !== null) {
+        if (seen.has(value)) {
+          return;
+        }
+        seen.add(value);
+      }
+      return value;
+    };
+  };
 
   // 新規追加
   addTodo() {
@@ -48,6 +65,8 @@ class App extends Component {
     this.setState({
       todo : this.state.todo
     });
+
+    this.saveTodoForLocalStorage();
     
     this.addTodoInputRef.current.value='';
   }
@@ -61,6 +80,8 @@ class App extends Component {
     this.setState({
       todo : this.state.todo
     });
+
+    this.saveTodoForLocalStorage();
   }
 
   // 編集
@@ -73,6 +94,8 @@ class App extends Component {
     this.setState({
       todo : this.state.todo
     });
+    
+    this.saveTodoForLocalStorage();
   }
 
   // フォーカスが外れたため編集終了
@@ -83,6 +106,7 @@ class App extends Component {
     this.setState({
       todo : this.state.todo
     });
+    this.saveTodoForLocalStorage();
   }
 
   // Enterキーが押されたため編集終了
@@ -97,8 +121,10 @@ class App extends Component {
         todo : this.state.todo
       });
     }
+    this.saveTodoForLocalStorage();
   }
 
+  // ステータス更新
   changeTodoStatus(i) {
     this.state.todo[i].status = this.getNextStatus(this.state.todo[i].status);
     
@@ -107,6 +133,7 @@ class App extends Component {
     this.setState({
       todo : this.state.todo
     });
+    this.saveTodoForLocalStorage();
   }
 
   getNextStatus(preStatus) {
