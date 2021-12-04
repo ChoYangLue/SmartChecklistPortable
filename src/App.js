@@ -1,5 +1,6 @@
 import './App.css';
 import React, { Component } from 'react';
+import ReactDOM from 'react-dom'
 
 class App extends Component {
 
@@ -9,13 +10,26 @@ class App extends Component {
 
     this.state = {
       todo: [
-       { title: 'JavaScript覚える', status: "TODO", isEdit: false } ,
-       { title: 'jQuery覚える', status: "TODO", isEdit: false } ,
-       { title: 'ES2015覚える', status: "TODO", isEdit: false } ,
-       { title: 'React覚える', status: "TODO", isEdit: false }
+       { title: 'JavaScript覚える', status: "TODO", isEdit: false, inputRef: React.createRef() } ,
+       { title: 'jQuery覚える', status: "TODO", isEdit: false, inputRef: React.createRef() } ,
+       { title: 'ES2015覚える', status: "TODO", isEdit: false, inputRef: React.createRef() } ,
+       { title: 'React覚える', status: "TODO", isEdit: false, inputRef: React.createRef() }
       ]
     };
     this.addTodo = this.addTodo.bind(this);
+
+    
+  }
+
+  componentDidUpdate() {
+    this.state.todo.map( (todo, i) => {
+      if (todo.isEdit) {
+        // 編集状態ならフォーカスを合わせる
+        todo.inputRef.current.focus();
+        return;
+      }
+    });
+
   }
 
   // 新規追加
@@ -27,7 +41,8 @@ class App extends Component {
     // 追加
     this.state.todo.push({
       title: this.refs.newText.value,
-      status: this.statusList[0]
+      status: this.statusList[0],
+      inputRef: React.createRef()
     });
     // 保存
     this.setState({
@@ -53,7 +68,8 @@ class App extends Component {
     if (this.state.todo[i].isEdit) this.state.todo[i].isEdit = false;
     else this.state.todo[i].isEdit = true;
 
-    this.refs.addText.value = this.state.todo[i].title;
+    this.state.todo[i].inputRef.current.value = this.state.todo[i].title;
+    this.state.todo[i].inputRef.current.focus();
     this.setState({
       todo : this.state.todo
     });
@@ -122,7 +138,7 @@ class App extends Component {
             return <li key={i} >
             <input type="button" value={todo.status} onClick={() => this.changeTodoStatus(i)}/>
             <span onClick={() => this.changeTodoTitle(i)} hidden={todo.isEdit}>{todo.title}</span>
-            <input type="text" ref="addText" onChange={(e) => this.handleOnChangeEdit(i, e)} value={todo.title} hidden={!todo.isEdit} onBlur={() => this.onBlurTitleEdit(i)} autoFocus={todo.isEdit}/>
+            <input type="text" ref={todo.inputRef} onChange={(e) => this.handleOnChangeEdit(i, e)} value={todo.title} hidden={!todo.isEdit} onBlur={() => this.onBlurTitleEdit(i)} autoFocus={todo.isEdit}/>
             <input type="button" value="☓" onClick={() => this.deleteTodo(i)}/> 
             </li>
           })}
