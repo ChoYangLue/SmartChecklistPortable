@@ -6,6 +6,7 @@ class App extends Component {
   constructor(props){
     super(props);
     this.statusList = ["TODO", "PROG", "DONE", "SKIP"];
+    this.statusStyleDictionary = { TODO:"white", PROG:"red", DONE:"green", SKIP:"gray" };
 
     this.state = {
       // todo: [{ title: 'JavaScript覚える', status: "TODO", isEdit: false, inputRef: React.createRef() }]
@@ -177,7 +178,7 @@ class App extends Component {
         <ul>
           {this.state.todo.map( (todo, i) => {
             return <li key={i} >
-            <input type="button" value={todo.status} onClick={() => this.changeTodoStatus(i)}/>
+            <input type="button" value={todo.status} onClick={() => this.changeTodoStatus(i)} className="status-button-style" style={{color: this.statusStyleDictionary[todo.status], border: '2px solid '+this.statusStyleDictionary[todo.status] }}/>
             <span onClick={() => this.changeTodoTitle(i)} hidden={todo.isEdit}>{todo.title}</span>
             <input type="text" ref={todo.inputRef} onChange={(e) => this.handleOnChangeEdit(i, e)} value={todo.title} hidden={!todo.isEdit} onBlur={() => this.onBlurTitleEdit(i)} onKeyPress={(e) => this.onKeyPressTitleEdit(i, e)}/>
             <input type="button" value="☓" onClick={() => this.deleteTodo(i)}/> 

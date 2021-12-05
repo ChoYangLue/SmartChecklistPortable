@@ -36,3 +36,34 @@
     transform: rotate(360deg);
   }
 }
+
+.status-button-style {
+  border-radius: 25% 10%;
+  background: #282c34;
+  -webkit-transform-style: preserve-3d;
+
+  transform-style: preserve-3d;
+  text-align:center;
+
+  font-size: 0.5em;
+  margin: 0.3em;
+}
+
+.status-button-style:before {
+  position: absolute;
+  top: 0;
+  left: 0;
+
+  content: '';
+  -webkit-transition: all .3s;
+  transition: all .3s;
+}
+
+.status-button-style:hover {
+  color: #fff;
+  background: #000;
+}
+
+.status-button-style:hover:before {
+  background: #fff;
+}
