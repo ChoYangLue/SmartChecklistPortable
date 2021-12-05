@@ -1,5 +1,14 @@
 # SmartChecklistPortable
+TODO管理アプリです。
 
+# デバッグ方法
+update.batとinstall.batを実行後にdebug.batを実行してください。
+
+# Windowsアプリを出力する方法
+update.batとinstall.batとbuild.batを実行した後で、export_win.batを実行してください。
+Python3と下記のライブラリが必要です。
+- pip3 install eel
+- pip3 install PyInstaller
 
 # Getting Started with Create React App
 
