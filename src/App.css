@@ -37,6 +37,7 @@
   }
 }
 
+
 .status-button-style {
   border-radius: 25% 10%;
   background: #282c34;
@@ -66,4 +67,11 @@
 
 .status-button-style:hover:before {
   background: #fff;
+}
+
+.delete-button-style {
+  background: #cecece;
+  color: rgb(149, 0, 0);
+  border-radius: 100%;
+  margin-left: 3em;
 }
