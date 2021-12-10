@@ -7,9 +7,10 @@ class App extends Component {
     super(props);
     this.statusList = ["TODO", "PROG", "DONE", "SKIP"];
     this.statusStyleDictionary = { TODO:"white", PROG:"red", DONE:"green", SKIP:"gray" };
+    this.colorProfile = { baseText:"white", hideText:"gray" };
 
     this.state = {
-      // todo: [{ title: 'JavaScript覚える', status: "TODO", isEdit: false, inputRef: React.createRef() }]
+      // todo: [{ title: 'JavaScript覚える', status: "TODO", isEdit: false, inputRef: React.createRef(), isChecked: false }]
       todo: JSON.parse(localStorage.getItem("todoList")) || [],
     };
     this.state.todo.map( (todo, i) => {
@@ -160,6 +161,17 @@ class App extends Component {
       todo : this.state.todo
     });
   }
+
+  handleOnChangeCheckbox(i, e) {
+    if (this.state.todo[i].isChecked) this.state.todo[i].isChecked = false;
+    else this.state.todo[i].isChecked = true;
+    //this.state.todo[i].isChecked = e.target.value;
+
+    this.setState({
+      todo : this.state.todo
+    });
+    this.saveTodoForLocalStorage();
+  }
  
   render() {
     return (
@@ -177,11 +189,12 @@ class App extends Component {
           <input type="submit" value="追加" onSubmit={this.addTodo} />
         </form>
 
-        <ul>
+        <ul className="ul-style">
           {this.state.todo.map( (todo, i) => {
             return <li key={i} style={{ justifyContent: 'center', flexDirection: 'row' }}>
+            <input type="checkbox" checked={todo.isChecked} onChange={(e) => this.handleOnChangeCheckbox(i, e)} />
             <input type="button" value={todo.status} onClick={() => this.changeTodoStatus(i)} className="status-button-style" style={{color: this.statusStyleDictionary[todo.status], border: '2px solid '+this.statusStyleDictionary[todo.status] }}/>
-            <span onClick={() => this.changeTodoTitle(i)} hidden={todo.isEdit}>{todo.title}</span>
+            <span onClick={() => this.changeTodoTitle(i)} style={{ textDecorationLine: todo.isChecked?'line-through':'', color: todo.isChecked?this.colorProfile.hideText:this.colorProfile.baseText }} hidden={todo.isEdit}>{todo.title}</span>
             <input type="text" ref={todo.inputRef} onChange={(e) => this.handleOnChangeEdit(i, e)} value={todo.title} hidden={!todo.isEdit} onBlur={() => this.onBlurTitleEdit(i)} onKeyPress={(e) => this.onKeyPressTitleEdit(i, e)}/>
             <input type="button" value="☓" onClick={() => this.deleteTodo(i)} className="delete-button-style"/> 
             </li>

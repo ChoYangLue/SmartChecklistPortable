@@ -75,3 +75,8 @@
   border-radius: 100%;
   margin-left: 3em;
 }
+
+.ul-style {
+  list-style-type: none;
+  padding: 0;
+}
