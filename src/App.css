@@ -76,6 +76,36 @@
   margin-left: 3em;
 }
 
+.upvote-button-style a {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin: 0 auto;
+  width: 80px;
+  height: 80px;
+  background-color: #cccccc;
+  border: 3px solid #aaaaaa;
+  border-radius: 50vh;
+  transition: 0.3s;
+}
+
+
+.upvote-button-style {
+  display: inline-block;
+  text-decoration: none;
+  background: #fff1da;
+  color: #583800;
+  border-radius: 50%;
+  text-align: center;
+  overflow: hidden;
+  transition: .4s;
+}
+
+.upvote-button-style:hover {
+  background: #ffc25c;
+}
+
+
 .ul-style {
   list-style-type: none;
   padding: 0;

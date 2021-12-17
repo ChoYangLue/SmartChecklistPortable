@@ -165,12 +165,22 @@ class App extends Component {
   handleOnChangeCheckbox(i, e) {
     if (this.state.todo[i].isChecked) this.state.todo[i].isChecked = false;
     else this.state.todo[i].isChecked = true;
-    //this.state.todo[i].isChecked = e.target.value;
 
     this.setState({
       todo : this.state.todo
     });
     this.saveTodoForLocalStorage();
+  }
+
+  moveListForward(index) {
+    if (index-1 < 0) return;
+
+    // 一つ前と入れ替え
+    this.state.todo.splice(index-1, 2, this.state.todo[index], this.state.todo[index-1]);
+
+    this.setState({
+      todo : this.state.todo
+    });
   }
  
   render() {
@@ -192,6 +202,7 @@ class App extends Component {
         <ul className="ul-style">
           {this.state.todo.map( (todo, i) => {
             return <li key={i} style={{ justifyContent: 'center', flexDirection: 'row' }}>
+            <input type="button" value="↑" onClick={() => this.moveListForward(i)} className="upvote-button-style"/> 
             <input type="checkbox" checked={todo.isChecked} onChange={(e) => this.handleOnChangeCheckbox(i, e)} />
             <input type="button" value={todo.status} onClick={() => this.changeTodoStatus(i)} className="status-button-style" style={{color: this.statusStyleDictionary[todo.status], border: '2px solid '+this.statusStyleDictionary[todo.status] }}/>
             <span onClick={() => this.changeTodoTitle(i)} style={{ textDecorationLine: todo.isChecked?'line-through':'', color: todo.isChecked?this.colorProfile.hideText:this.colorProfile.baseText }} hidden={todo.isEdit}>{todo.title}</span>
