@@ -10,7 +10,7 @@ class App extends Component {
     this.colorProfile = { baseText:"white", hideText:"gray" };
 
     this.state = {
-      // todo: [{ title: 'JavaScript覚える', status: "TODO", isEdit: false, inputRef: React.createRef(), isChecked: false }]
+      // todo: [{ title: 'JavaScript覚える', status: "TODO", isEdit: false, inputRef: React.createRef(), isChecked: false, indent: 0 }]
       todo: JSON.parse(localStorage.getItem("todoList")) || [],
     };
     this.state.todo.map( (todo, i) => {
@@ -113,10 +113,12 @@ class App extends Component {
     this.saveTodoForLocalStorage();
   }
 
-  // Enterキーが押されたため編集終了
-  onKeyPressTitleEdit(i, e) {
+  // キー入力
+  onKeyDownTitleEdit(i, e) {
     console.log("edit end by enter");
+
     if (e.key == 'Enter') {
+      // Enterキーが押されたため編集終了
       e.preventDefault();
       
       this.state.todo[i].isEdit = false;
@@ -124,8 +126,27 @@ class App extends Component {
       this.setState({
         todo : this.state.todo
       });
+    } else if (e.key === 'Tab' && e.keyCode !== 229) {
+      // タイプしたキーがTabキーの時 かつ 日本語入力未確定状態でない時
+      e.preventDefault();
+
+      this.state.todo[i].indent = this.changeTodoIndent(i);
+
+      console.log(this.state.todo[i].indent);
+      this.setState({
+        todo : this.state.todo
+      });
     }
+
     this.saveTodoForLocalStorage();
+  }
+
+  changeTodoIndent(i) {
+    if (isNaN(this.state.todo[i].indent)) return 0;
+    if (i == 0) return 0;
+
+    if (isNaN(this.state.todo[i-1].indent)) return 1;
+    return this.state.todo[i-1].indent + 1;
   }
 
   // ステータス更新
@@ -163,8 +184,14 @@ class App extends Component {
   }
 
   handleOnChangeCheckbox(i, e) {
-    if (this.state.todo[i].isChecked) this.state.todo[i].isChecked = false;
-    else this.state.todo[i].isChecked = true;
+    if (this.state.todo[i].isChecked) {
+      this.state.todo[i].isChecked = false;
+      this.state.todo[i].status = "TODO";
+    }
+    else {
+      this.state.todo[i].isChecked = true;
+      this.state.todo[i].status = "DONE";
+    }
 
     this.setState({
       todo : this.state.todo
@@ -201,12 +228,12 @@ class App extends Component {
 
         <ul className="ul-style">
           {this.state.todo.map( (todo, i) => {
-            return <li key={i} style={{ justifyContent: 'center', flexDirection: 'row' }}>
+            return <li key={i} style={{ justifyContent: 'center', flexDirection: 'row', paddingLeft: todo.indent*20 }}>
             <input type="button" value="↑" onClick={() => this.moveListForward(i)} className="upvote-button-style"/> 
             <input type="checkbox" checked={todo.isChecked} onChange={(e) => this.handleOnChangeCheckbox(i, e)} />
             <input type="button" value={todo.status} onClick={() => this.changeTodoStatus(i)} className="status-button-style" style={{color: this.statusStyleDictionary[todo.status], border: '2px solid '+this.statusStyleDictionary[todo.status] }}/>
             <span onClick={() => this.changeTodoTitle(i)} style={{ textDecorationLine: todo.isChecked?'line-through':'', color: todo.isChecked?this.colorProfile.hideText:this.colorProfile.baseText }} hidden={todo.isEdit}>{todo.title}</span>
-            <input type="text" ref={todo.inputRef} onChange={(e) => this.handleOnChangeEdit(i, e)} value={todo.title} hidden={!todo.isEdit} onBlur={() => this.onBlurTitleEdit(i)} onKeyPress={(e) => this.onKeyPressTitleEdit(i, e)}/>
+            <input type="text" ref={todo.inputRef} onChange={(e) => this.handleOnChangeEdit(i, e)} value={todo.title} hidden={!todo.isEdit} onBlur={() => this.onBlurTitleEdit(i)} onKeyDown={(e) => this.onKeyDownTitleEdit(i, e)}/>
             <input type="button" value="☓" onClick={() => this.deleteTodo(i)} className="delete-button-style"/> 
             </li>
           })}
