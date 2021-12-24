@@ -115,10 +115,12 @@ class App extends Component {
 
   // キー入力
   onKeyDownTitleEdit(i, e) {
-    console.log("edit end by enter");
+    
+    console.log(e.key);
 
     if (e.key == 'Enter') {
       // Enterキーが押されたため編集終了
+      console.log("edit end by enter");
       e.preventDefault();
       
       this.state.todo[i].isEdit = false;
@@ -131,6 +133,16 @@ class App extends Component {
       e.preventDefault();
 
       this.state.todo[i].indent = this.changeTodoIndent(i);
+
+      console.log(this.state.todo[i].indent);
+      this.setState({
+        todo : this.state.todo
+      });
+    } else if (e.key === 'Alt' && e.keyCode !== 229) {
+      // タイプしたキーがAltLeftキーの時 かつ 日本語入力未確定状態でない時
+      e.preventDefault();
+
+      if (this.state.todo[i].indent > 0) this.state.todo[i].indent -= 1;
 
       console.log(this.state.todo[i].indent);
       this.setState({
