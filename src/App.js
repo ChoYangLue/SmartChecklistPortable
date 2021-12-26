@@ -18,6 +18,7 @@ class App extends Component {
     });
     this.addTodo = this.addTodo.bind(this);
     this.addTodoInputRef = React.createRef();
+    this.isPressShift = false;
   }
 
   // 画面Update
@@ -63,7 +64,9 @@ class App extends Component {
     this.state.todo.push({
       title: this.addTodoInputRef.current.value,
       status: this.statusList[0],
-      inputRef: React.createRef()
+      inputRef: React.createRef(),
+      isChecked: false,
+      indent: 0
     });
 
     this.setState({
@@ -115,9 +118,7 @@ class App extends Component {
 
   // キー入力
   onKeyDownTitleEdit(i, e) {
-    
-    console.log(e.key);
-
+    let saveFlag = false;
     if (e.key == 'Enter') {
       // Enterキーが押されたため編集終了
       console.log("edit end by enter");
@@ -128,29 +129,38 @@ class App extends Component {
       this.setState({
         todo : this.state.todo
       });
+      saveFlag = true;
     } else if (e.key === 'Tab' && e.keyCode !== 229) {
       // タイプしたキーがTabキーの時 かつ 日本語入力未確定状態でない時
       e.preventDefault();
 
-      this.state.todo[i].indent = this.changeTodoIndent(i);
+      if (this.isPressShift) {
+        if (this.state.todo[i].indent > 0) this.state.todo[i].indent -= 1;
+      } else {
+        this.state.todo[i].indent = this.changeTodoIndent(i);
+      }
 
-      console.log(this.state.todo[i].indent);
+      console.log(this.isPressShift);
       this.setState({
         todo : this.state.todo
       });
-    } else if (e.key === 'Alt' && e.keyCode !== 229) {
-      // タイプしたキーがAltLeftキーの時 かつ 日本語入力未確定状態でない時
-      e.preventDefault();
-
-      if (this.state.todo[i].indent > 0) this.state.todo[i].indent -= 1;
-
-      console.log(this.state.todo[i].indent);
-      this.setState({
-        todo : this.state.todo
-      });
+      saveFlag = true;
     }
 
-    this.saveTodoForLocalStorage();
+    // 同時押し用
+    if (e.key == 'Shift') {
+      this.isPressShift = true;
+      return;
+    }
+
+    if (saveFlag) this.saveTodoForLocalStorage();
+  }
+
+  onKeyUp(i, e) {
+    // 同時押し用
+    if (e.key == 'Shift') {
+      this.isPressShift = false;
+    }
   }
 
   changeTodoIndent(i) {
@@ -245,7 +255,7 @@ class App extends Component {
             <input type="checkbox" checked={todo.isChecked} onChange={(e) => this.handleOnChangeCheckbox(i, e)} />
             <input type="button" value={todo.status} onClick={() => this.changeTodoStatus(i)} className="status-button-style" style={{color: this.statusStyleDictionary[todo.status], border: '2px solid '+this.statusStyleDictionary[todo.status] }}/>
             <span onClick={() => this.changeTodoTitle(i)} style={{ textDecorationLine: todo.isChecked?'line-through':'', color: todo.isChecked?this.colorProfile.hideText:this.colorProfile.baseText }} hidden={todo.isEdit}>{todo.title}</span>
-            <input type="text" ref={todo.inputRef} onChange={(e) => this.handleOnChangeEdit(i, e)} value={todo.title} hidden={!todo.isEdit} onBlur={() => this.onBlurTitleEdit(i)} onKeyDown={(e) => this.onKeyDownTitleEdit(i, e)}/>
+            <input type="text" ref={todo.inputRef} onChange={(e) => this.handleOnChangeEdit(i, e)} value={todo.title} hidden={!todo.isEdit} onBlur={() => this.onBlurTitleEdit(i)} onKeyDown={(e) => this.onKeyDownTitleEdit(i, e)} onKeyUp={(e) => this.onKeyUp(i, e)}/>
             <input type="button" value="☓" onClick={() => this.deleteTodo(i)} className="delete-button-style"/> 
             </li>
           })}
